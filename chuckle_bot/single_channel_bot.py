@@ -48,6 +48,7 @@ class Bot(discord.Client):
         for guild in self.guilds:
             if guild.name == self._main_guild_name:
                 self.main_guild = guild
+                break
         self.main_channel = self.main_guild.get_channel(self._main_channel_id)
         if msg := self._on_ready_msg:
             await self.send_message(msg)
