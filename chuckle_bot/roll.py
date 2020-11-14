@@ -6,22 +6,47 @@ OPERATION_TOKENS = ["+", "-"]
 class CalculationException(Exception): pass
 
 
-def get_response(input_message):
-    value, instruction_str, evaluation_str = evaluate(input_message)
+def get_response(input_message, stats=None, advantage=False, disadvantage=False):
+    value, instruction_str, evaluation_str = evaluate(input_message, stats)
     if value is None:
         return "Well that's just not possible"
+
+    display_instructions = str(value) != evaluation_str
+
+    if advantage or disadvantage:
+        if advantage:
+            modifier = "advantage"
+        else:
+            modifier = "disadvantage"
+        value2, _, evaluation_str2 = evaluate(input_message, stats)
+        msg = "Rolling (" + instruction_str + ") with **" + modifier + "**! "
+        msg += "First roll = "
+        if display_instructions:
+            msg += "`" + evaluation_str + "` = "
+        msg += "**" + str(value) + "**. "
+        msg += "Second roll = "
+        if display_instructions:
+            msg += "`" + evaluation_str2 + "` = "
+        msg += "**" + str(value2) + "**.\n"
+        msg += "Result = **"
+        if advantage:
+            result = str(max(value, value2))
+        else:
+            result = str(min(value, value2))
+        msg += result + "**"
     else:
         msg = "Rolling: (" + instruction_str + ") = "
         str_val = str(value)
-        if evaluation_str != str_val:
+        if display_instructions:
             msg += "`" + evaluation_str + "` = "
         msg += "**" + str_val + "**"
-        return msg
+    return msg
 
 
-def evaluate(expression):
+def evaluate(expression, stats):
     try:
         tokens = _parse(expression)
+        tokens = _apply_stats(tokens, stats)
         tree = _tokens_to_tree(tokens)
         return tree.evaluate(), tree.instruction_string(), tree.evaluation_string()
     except CalculationException:
@@ -30,7 +55,7 @@ def evaluate(expression):
 
 def _parse(expression):
     """ Parse an expression as a list of tokens """
-    expression = ''.join(expression.split())
+    expression = expression.lower().replace(' ', '')
 
     tokens = []
     current_token = []
@@ -48,6 +73,24 @@ def _parse(expression):
             current_token.append(elem)
     add_token(current_token)
     return tokens
+
+
+def _apply_stats(tokens, stats):
+    if stats is None:
+        return tokens
+    resultant_tokens = []
+    for token in tokens:
+        if token.upper() in stats.all_options():
+            modifier = stats.get_modifier(token.upper())
+            if modifier >= 0:
+                str_modifier = "+" + str(modifier)
+            else:
+                str_modifier = str(modifier)
+            new_tokens = _parse('d20' + str_modifier)
+        else:
+            new_tokens = [token]
+        resultant_tokens.extend(new_tokens)
+    return resultant_tokens
 
 
 class LeafNode:

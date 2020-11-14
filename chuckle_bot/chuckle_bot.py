@@ -1,3 +1,5 @@
+from chuckle_bot.parser import parse_message
+from chuckle_bot.parser import ParseError
 from chuckle_bot.simple_logging import Logger
 from chuckle_bot.single_channel_bot import Bot
 
@@ -7,7 +9,7 @@ from chuckle_bot import roll
 import discord
 
 
-def make_chuckle_bot(guild_name, channel_id, players):
+def make_chuckle_bot(guild_name, channel_id, players, characters):
     """ Make the ChuckleBot
 
     :param guild_name: The name of the Discord Guild
@@ -19,6 +21,7 @@ def make_chuckle_bot(guild_name, channel_id, players):
     :param players: The players which are allowed to interact with the bot
     :type players: chuckle_bot.members.Members
     """
+
     logger = Logger()
 
     bot_intents = discord.Intents.default()
@@ -46,15 +49,17 @@ def make_chuckle_bot(guild_name, channel_id, players):
         await bot.send_message("Hello " + sender["CHAR_FULL"])
 
     async def roll_handler(cmd):
-        await bot.send_message(roll.get_response(cmd.message))
+        adv = "advantage" in cmd.flags
+        disadv = "disadvantage" in cmd.flags
+        stats = characters.get(players.get(cmd.sender)["CHAR_ID"])
+        await bot.send_message(roll.get_response(cmd.message, stats, adv, disadv))
 
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),
         begone_handler,
         flags=[
             command.CommandOptionIdentifier(
-                'quiet', 'q', 'Leaves without saying goodbye. Rude.'
-            )
+                'quiet', 'q', 'Leaves without saying goodbye. Rude.')
         ]
     )
     command_handler.register_command(
@@ -67,57 +72,12 @@ def make_chuckle_bot(guild_name, channel_id, players):
     )
     command_handler.register_command(
         command.CommandType('roll', 'Roll some dice...'),
-        roll_handler
+        roll_handler,
+        flags=[
+            command.CommandOptionIdentifier('advantage', 'adv', 'Roll with advantage!'),
+            command.CommandOptionIdentifier('disadvantage', 'disadv', 'Roll with disadvantage!'),
+        ]
     )
-
-    class ParseError(Exception):
-        def __init__(self, msg=None):
-            super().__init__()
-            self.msg = msg
-
-    def parse_message(message):
-        """ Parse the message as a CommandInstance
-
-        Return None if there is no command in the message
-        Raise ParseError if the Command is not understood
-        """
-
-        if not message.content.startswith('.'):
-            return None
-        if len(message.content) == 1:
-            return None
-
-        instruction_and_data = message.content[1:]
-        if " " in instruction_and_data:
-            instruction, data = instruction_and_data.split(' ', 1)
-        else:
-            instruction = instruction_and_data
-            data = ""
-
-        found_options = {}
-        found_flags = []
-        if '--' in data:
-            data, flags = data.split('--', 1)
-            flags = flags.replace('--', '')
-            flags = flags.split(' ')
-            flags = [flag.strip() for flag in flags]
-            found_flags = [x for x in flags if len(x) != 0]
-
-        if "=" in data and "-" in data:
-            # Split at the first '-' before the data..
-            lhs, rhs = data.split('=', 1)
-            data, lhs = lhs.rsplit('-', 1)
-            options = lhs + '=' + rhs
-            options = options.replace('-', '')
-            option_pairs = options.split(' ')
-            option_pairs = [x.strip() for x in option_pairs]
-            option_pairs = [x for x in option_pairs if len(x) != 0]
-            for pair in option_pairs:
-                key, val = pair.split('=')
-                found_options[key] = val
-
-        return command.CommandInstance(instruction, data, message.author.id,
-                                       found_options, found_flags)
 
     async def handle_message(message):
         try:
@@ -131,6 +91,6 @@ def make_chuckle_bot(guild_name, channel_id, players):
         except command.CommandException as exc:
             await bot.send_message(exc.msg)
 
-    bot.set_ready_message("Chuckle!")
+    #bot.set_ready_message("Chuckle!")
     bot.set_message_handler(handle_message)
     return bot

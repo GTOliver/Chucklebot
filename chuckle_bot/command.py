@@ -104,5 +104,5 @@ class CommandHandler:
         if len(self._flags[idx]) != 0:
             msg += "    Flags:\n"
             for flg in self._flags[idx]:
-                msg += "        --" + flg.full + " --(" + flg.abrv + ") '" + flg.desc + "'\n"
+                msg += "        --" + flg.full + " (--" + flg.abrv + ") '" + flg.desc + "'\n"
         return msg
