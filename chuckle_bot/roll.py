@@ -14,7 +14,7 @@ def get_response(input_message):
         msg = "Rolling: (" + instruction_str + ") = "
         str_val = str(value)
         if evaluation_str != str_val:
-            msg += "`" +evaluation_str + "` = "
+            msg += "`" + evaluation_str + "` = "
         msg += "**" + str_val + "**"
         return msg
 
@@ -100,7 +100,6 @@ class LeafNode:
             return True
         except ValueError:
             return False
-
 
 
 class OperationNode:

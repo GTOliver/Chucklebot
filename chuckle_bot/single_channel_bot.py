@@ -2,7 +2,7 @@ import discord
 
 
 class Bot(discord.Client):
-    def __init__(self, guild_name, channel_id, logger=None):
+    def __init__(self, guild_name, channel_id, logger=None, **kwargs):
         """
         Bot for use with a single Discord Guild and Text Channel
 
@@ -14,7 +14,7 @@ class Bot(discord.Client):
 
         :param logger: An optional logger to
         """
-        super().__init__()
+        super().__init__(**kwargs)
         self._main_guild_name = guild_name
         self._main_channel_id = channel_id
         self._logger = logger
