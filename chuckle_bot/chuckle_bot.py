@@ -9,7 +9,7 @@ from chuckle_bot import roll
 import discord
 
 
-def make_chuckle_bot(guild_name, channel_id, players, characters):
+def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
     """ Make the ChuckleBot
 
     :param guild_name: The name of the Discord Guild
@@ -54,6 +54,23 @@ def make_chuckle_bot(guild_name, channel_id, players, characters):
         stats = characters.get(players.get(cmd.sender)["CHAR_ID"])
         await bot.send_message(roll.get_response(cmd.message, stats, adv, disadv))
 
+    async def chuckles_handler(cmd):
+        if "all" in cmd.flags:
+            all_chuckles = chuckles.get_all()
+            data_strs = []
+            for data_pair in all_chuckles:
+                print(data_pair["CHAR_ID"])
+                char_name = players.get_by_character_id(data_pair["CHAR_ID"])["CHAR_FULL"]
+                data_str = char_name + ": " + str(data_pair["COUNT"])
+                data_strs.append(data_str)
+            msg = "\n".join(data_strs)
+        else:
+            player = players.get(cmd.sender)
+            player_name = player['CHAR_FULL']
+            chuckles_caused = chuckles.get_count(player['CHAR_ID'])
+            msg = player_name + " has caused " + str(chuckles_caused) + " Chultian chuckles!"
+        await bot.send_message(msg)
+
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),
         begone_handler,
@@ -76,6 +93,13 @@ def make_chuckle_bot(guild_name, channel_id, players, characters):
         flags=[
             command.CommandOptionIdentifier('advantage', 'adv', 'Roll with advantage!'),
             command.CommandOptionIdentifier('disadvantage', 'disadv', 'Roll with disadvantage!'),
+        ]
+    )
+    command_handler.register_command(
+        command.CommandType('chuckles', 'Get the current chuckle tally'),
+        chuckles_handler,
+        flags=[
+            command.CommandOptionIdentifier('all', 'a', "Show everyone's chuckles")
         ]
     )
 

@@ -1,4 +1,5 @@
 from chuckle_bot import chuckle_bot
+from chuckle_bot import chuckle_count
 from chuckle_bot import members
 
 import json
@@ -6,6 +7,7 @@ import json
 CONFIG_PATH = 'data/config.json'
 CHARACTER_PATH = 'data/characters.json'
 MEMBER_PATH = 'data/members.json'
+CHUCKLECOUNT_PATH = 'data/chuckle_tally.json'
 
 
 def main():
@@ -18,8 +20,11 @@ def main():
     with open(CHARACTER_PATH) as fp:
         dnd_characters = members.Characters(json.load(fp))
 
+    with open(CHUCKLECOUNT_PATH) as fp:
+        chuckles = chuckle_count.ChuckleCount(json.load(fp))
+
     bot = chuckle_bot.make_chuckle_bot(config['GUILD_NAME'], config['CHANNEL_ID'],
-                                       guild_members, dnd_characters)
+                                       guild_members, dnd_characters, chuckles)
     bot.run(config['BOT_TOKEN'])
 
 

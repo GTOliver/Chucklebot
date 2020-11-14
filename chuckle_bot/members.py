@@ -7,6 +7,11 @@ class Members:
             if member["ID"] == member_id:
                 return member
 
+    def get_by_character_id(self, char_id):
+        for member in self._member_list:
+            if member["CHAR_ID"] == char_id:
+                return member
+
 
 class Characters:
     def __init__(self, character_list):
