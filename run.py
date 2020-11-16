@@ -1,3 +1,4 @@
+from chuckle_bot import ally
 from chuckle_bot import chuckle_bot
 from chuckle_bot import chuckle_count
 from chuckle_bot import members
@@ -9,6 +10,8 @@ CONFIG_PATH = 'data/config.json'
 CHARACTER_PATH = 'data/characters.json'
 MEMBER_PATH = 'data/members.json'
 CHUCKLECOUNT_PATH = 'data/chuckle_tally.json'
+DEFAULT_ENCOUNTER_PATH = 'data/default_encounter.json'
+ALLIES_PATH = 'data/allies.json'
 
 
 def main():
@@ -24,8 +27,16 @@ def main():
     with open(CHUCKLECOUNT_PATH) as fp:
         chuckles = chuckle_count.ChuckleCount(json.load(fp))
 
+    with open(DEFAULT_ENCOUNTER_PATH) as fp:
+        default_encounter_chars = [dnd_characters.get(x) for x in json.load(fp)["CHARACTERS"]]
+
+    with open(ALLIES_PATH) as fp:
+        possible_allies = ally.Allies(json.load(fp))
+
     bot = chuckle_bot.make_chuckle_bot(config['GUILD_NAME'], config['CHANNEL_ID'],
-                                       guild_members, dnd_characters, chuckles)
+                                       guild_members, dnd_characters, chuckles,
+                                       default_encounter_chars,
+                                       possible_allies)
     bot.run(config['BOT_TOKEN'])
 
 

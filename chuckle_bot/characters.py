@@ -1,3 +1,6 @@
+from chuckle_bot.icharacter import ICharacter
+
+
 class Characters:
     def __init__(self, character_list):
         self._character_list = character_list
@@ -8,7 +11,7 @@ class Characters:
                 return Character(character)
 
 
-class Character:
+class Character(ICharacter):
     def __init__(self, character_data):
         self._data = character_data
 
@@ -19,6 +22,14 @@ class Character:
     @property
     def full_name(self):
         return self._data['CHAR_FULL']
+
+    @property
+    def class_(self):
+        return self._data['CLASS']
+
+    @property
+    def race(self):
+        return self._data['RACE']
 
     def get_modifier(self, stat_or_skill):
         if stat_or_skill not in self._data['STATS']:

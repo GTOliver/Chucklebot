@@ -1,3 +1,4 @@
+from chuckle_bot.encounter import Encounter
 from chuckle_bot.parser import parse_message
 from chuckle_bot.parser import ParseError
 from chuckle_bot.simple_logging import Logger
@@ -9,7 +10,8 @@ from chuckle_bot import roll
 import discord
 
 
-def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
+def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
+                     default_encounter_chars, possible_allies):
     """ Make the ChuckleBot
 
     :param guild_name: The name of the Discord Guild
@@ -29,6 +31,7 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
 
     bot = Bot(guild_name, channel_id, logger, intents=bot_intents)
 
+    current_encounter = Encounter(default_encounter_chars)
     command_handler = command.CommandHandler()
 
     async def help_handler(cmd):
@@ -71,6 +74,39 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
             msg = player_name + " has caused " + str(chuckles_caused) + " Chultian chuckles!"
         await bot.send_message(msg)
 
+    async def encounter_handler(cmd):
+        instruction = cmd.message.strip().lower()
+        if instruction == "display":
+            response = str(current_encounter)
+        elif instruction == "begin":
+            response = current_encounter.begin()
+        elif instruction == "end":
+            response = current_encounter.end()
+        elif instruction == "init":
+            response = current_encounter.reset()
+        elif instruction == "add":
+            try:
+                ally_to_add = possible_allies.get(cmd.options["ally"])
+                if ally_to_add is not None:
+                    current_encounter.add_ally(ally_to_add)
+                    response = ally_to_add.full_name + " has been added to the encounter"
+                else:
+                    response = "I don't know who that is"
+            except KeyError:
+                response = "I don't understand what you want me to add"
+        else:
+            response = "Err... what?"
+
+        # add -ally=Artus
+        # begin -allies=[Artus,Dragonbait]
+        # begin -allies=(Artus,Dragonbait)
+        await bot.send_message(response)
+        pass
+
+    async def say_handler(cmd):
+        # Say something. All allies in the encounter hear the message.
+        pass
+
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),
         begone_handler,
@@ -84,6 +120,13 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
         chuckles_handler,
         flags=[
             command.CommandOptionIdentifier('all', 'a', "Show everyone's chuckles")
+        ]
+    )
+    command_handler.register_command(
+        command.CommandType('encounter', 'Start, end, or modify the current encounter'),
+        encounter_handler,
+        options=[
+            command.CommandOptionIdentifier('ally', 'a', 'Use with "add" to add a named ally to the encounter')
         ]
     )
     command_handler.register_command(
@@ -102,6 +145,10 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
             command.CommandOptionIdentifier('disadvantage', 'disadv', 'Roll with disadvantage!'),
         ]
     )
+    command_handler.register_command(
+        command.CommandType('say', 'Say something to everyone in the current encounter'),
+        say_handler
+    )
 
     async def handle_message(message):
         try:
@@ -115,6 +162,6 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
         except command.CommandException as exc:
             await bot.send_message(exc.msg)
 
-    bot.set_ready_message("Chuckle!")
+    #bot.set_ready_message("Chuckle!")
     bot.set_message_handler(handle_message)
     return bot

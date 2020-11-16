@@ -57,7 +57,7 @@ class CommandHandler:
             option_found = False
             for known_option in self._options[idx]:
                 if option_key == known_option:
-                    new_options[known_option.full] == command.options[option_key]
+                    new_options[known_option.full] = command.options[option_key]
                     option_found = True
                     break
             if not option_found:
