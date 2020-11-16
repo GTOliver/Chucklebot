@@ -59,7 +59,6 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
             all_chuckles = chuckles.get_all()
             data_strs = []
             for data_pair in all_chuckles:
-                print(data_pair["CHAR_ID"])
                 char_name = players.get_by_character_id(data_pair["CHAR_ID"])["CHAR_FULL"]
                 data_str = char_name + ": " + str(data_pair["COUNT"])
                 data_strs.append(data_str)
@@ -115,6 +114,6 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles):
         except command.CommandException as exc:
             await bot.send_message(exc.msg)
 
-    #bot.set_ready_message("Chuckle!")
+    bot.set_ready_message("Chuckle!")
     bot.set_message_handler(handle_message)
     return bot

@@ -36,7 +36,7 @@ def parse_message(message):
         found_flags = [x for x in flags if len(x) != 0]
 
     if "=" in data and "-" in data:
-        # Split at the first '-' before the data..
+        # Split at the first '-' before the "="
         lhs, rhs = data.split('=', 1)
         data, lhs = lhs.rsplit('-', 1)
         options = lhs + '=' + rhs
