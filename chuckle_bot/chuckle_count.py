@@ -9,4 +9,4 @@ class ChuckleCount:
         return 0
 
     def get_all(self):
-        return self._chuckle_data
+        return [(x["CHAR_ID"], x['COUNT']) for x in self._chuckle_data]
