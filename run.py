@@ -31,7 +31,7 @@ def main():
         default_encounter_chars = [dnd_characters.get(x) for x in json.load(fp)["CHARACTERS"]]
 
     with open(ALLIES_PATH) as fp:
-        possible_allies = ally.Allies(json.load(fp))
+        possible_allies = ally.build_allies(json.load(fp))
 
     bot = chuckle_bot.make_chuckle_bot(config['GUILD_NAME'], config['CHANNEL_ID'],
                                        guild_members, dnd_characters, chuckles,

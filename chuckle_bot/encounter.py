@@ -1,11 +1,20 @@
+from chuckle_bot.ally import Allies
+
+
 class Encounter:
     def __init__(self, player_characters):
         self._characters = player_characters
-        self._allies = []
+        self._allies = Allies({})
         self._active = False
 
+    def get_action(self, char_name):
+        return self._allies.get(char_name).take_turn()
+
+    def say(self, sender, message):
+        pass
+
     def add_ally(self, ally):
-        self._allies.append(ally)
+        self._allies.add(ally.name, ally)
 
     def begin(self):
         self._active = True

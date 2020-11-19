@@ -75,14 +75,14 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
         await bot.send_message(msg)
 
     async def encounter_handler(cmd):
-        instruction = cmd.message.strip().lower()
+        instruction = cmd.message.split(' ', 1)[0].lower()
         if instruction == "display":
             response = str(current_encounter)
         elif instruction == "begin":
             response = current_encounter.begin()
         elif instruction == "end":
             response = current_encounter.end()
-        elif instruction == "init":
+        elif instruction == "reset":
             response = current_encounter.reset()
         elif instruction == "add":
             try:
@@ -94,14 +94,16 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
                     response = "I don't know who that is"
             except KeyError:
                 response = "I don't understand what you want me to add"
+        elif instruction == "act":
+            try:
+                person_to_act = cmd.message.split(' ', 1)[1].lower()
+                response = current_encounter.get_action(person_to_act)
+            except Exception:
+                response = "... who should act?"
+            pass
         else:
             response = "Err... what?"
-
-        # add -ally=Artus
-        # begin -allies=[Artus,Dragonbait]
-        # begin -allies=(Artus,Dragonbait)
         await bot.send_message(response)
-        pass
 
     async def say_handler(cmd):
         # Say something. All allies in the encounter hear the message.
