@@ -1,5 +1,5 @@
-from chuckle_bot.ally_behaviour import AllyBehaviour
-from chuckle_bot.ally_vocabulary import AllyVocabulary
+from chuckle_bot.ally_behaviour import ALLY_BEHAVIOUR
+from chuckle_bot.ally_vocabulary import ALLY_VOCABULARY
 from chuckle_bot.characters import Characters, ICharacter
 
 
@@ -10,8 +10,10 @@ def build_allies(raw_allies):
     allies = Characters([], ALLIES_INDEXER)
     for raw_ally in raw_allies:
         ally = Ally(raw_ally)
-        ally.set_behaviour(AllyBehaviour(ally))
-        ally.set_vocabulary(AllyVocabulary(ally))
+        behaviour = ALLY_BEHAVIOUR[raw_ally['BEHAVIOUR'].lower()](ally)
+        ally.set_behaviour(behaviour)
+        vocabulary = ALLY_VOCABULARY[raw_ally['VOCABULARY'].lower()](ally)
+        ally.set_vocabulary(vocabulary)
         allies.add(ally)
     return allies
 
@@ -42,10 +44,15 @@ class Ally(ICharacter):
 
     @property
     def race(self):
-        raise self._data["RACE"]
+        return self._data["RACE"]
+
+    @property
+    def pronouns(self):
+        return self._data["PRONOUNS"]
 
     def send_message(self, msg):
-        return self._behaviour.send_message(msg)
+        self._behaviour.send_message(msg)
+        return self._vocabulary.send_message(msg)
 
     def get_action(self):
         chosen_action = self._behaviour.get_action()

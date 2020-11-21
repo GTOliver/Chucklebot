@@ -15,6 +15,10 @@ class ICharacter:
     def race(self):
         raise NotImplementedError
 
+    @property
+    def pronouns(self):
+        raise NotImplementedError
+
 
 class Characters:
     def __init__(self, character_list, indexer):

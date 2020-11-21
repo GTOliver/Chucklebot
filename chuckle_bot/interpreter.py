@@ -70,7 +70,6 @@ class Interpreter:
 
         words = self._get_lwords(message)
         words = self._replace_sender(words, self._SENDER_PLACEHOLDER)
-        print(words)
 
         words, alii = self._create_placeholders(words, lparticipants,
                                                 Interpreter._placeholder_string)
@@ -78,7 +77,24 @@ class Interpreter:
 
         matched_pattern = self._matched_pattern(
             sender.lower(), self._SENDER_PLACEHOLDER, alii, simple_words)
-        return matched_pattern
+
+        if matched_pattern is None:
+            return
+        func = matched_pattern[0]
+        args = [sender]
+        for targ in matched_pattern[1:]:
+            if targ == self._SENDER_PLACEHOLDER:
+                args.append(sender)
+            elif targ.startswith('_'):
+                args.append(alii[int(targ[1:])])
+
+        actual_args = []
+        for arg in args:
+            if arg == "ALL":
+                actual_args.append(arg)
+            else:
+                actual_args.append(self._encounter_context.get_participant(arg))
+        return func(*actual_args)
 
     @staticmethod
     def _matched_pattern(sender, sender_placeholder, alii, simple_words):
@@ -92,14 +108,7 @@ class Interpreter:
         """
         for pattern, instruction in KNOWN_PATTERNS:
             if simple_words == pattern:
-                func = instruction[0]
-                args = [sender]
-                for targ in instruction[1:]:
-                    if targ == sender_placeholder:
-                        args.append(sender)
-                    elif targ.startswith('_'):
-                        args.append(alii[int(targ[1:])])
-                return func(*args)
+                return instruction
 
 
 SIMPLIFY_THESAURUS = {
@@ -131,6 +140,9 @@ KNOWN_PATTERNS = [
     (["_0", "attack"], (am.attack, "_0")),
     (["attack", "_0"], (am.attack, "_0")),
     (["_x", "_0", "attack"], (am.attack, "_0")),
+    (["_0", "attack", "rebuke"], (am.attack, "_0")),
+    (["attack", "rebuke", "_0"], (am.attack, "_0")),
+    (["_x", "_0", "attack", "rebuke"], (am.attack, "_0")),
     (["_0", "inverse", "attack"], (am.wait, "_0")),
     (["inverse", "attack", "_0"], (am.wait, "_0")),
 
@@ -160,6 +172,7 @@ KNOWN_PATTERNS = [
     (["support", "_0"], (am.support, "ALL", "_0")),
     (["support", "_x", "_0"], (am.support, "_0", "_x")),
     (["_0", "support", "_x"], (am.support, "_0", "_x")),
+    (["_0", "_x", "support"], (am.support, "_0", "_x")),
     (["_0", "support", "_x"], (am.support, "_0", "_x")),
     (["_x", "support", "_0"], (am.support, "_x", "_0")),
     (["_x", "support", "_0"], (am.support, "_x", "_0")),

@@ -86,23 +86,6 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
             response = encounter.end()
         elif instruction == "reset":
             response = encounter.reset()
-        elif instruction == "add":
-            try:
-                ally_to_add = possible_allies.get(cmd.options["ally"])
-                if ally_to_add is not None:
-                    encounter.add_ally(ally_to_add)
-                    response = ally_to_add.full_name + " has been added to the encounter"
-                else:
-                    response = "I don't know who that is"
-            except KeyError:
-                response = "I don't understand what you want me to add"
-        elif instruction == "act":
-            #try:
-            person_to_act = cmd.message.split(' ', 1)[1].lower()
-            response = encounter.get_action(person_to_act)
-            #except Exception:
-            #    response = "... who should act?"
-            pass
         else:
             response = "Err... what?"
         await bot.send_message(response)
@@ -114,7 +97,28 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
         msg_info = say_interpreter.interpret(sayer_name, cmd.message)
         if msg_info is not None:
             response = encounter.say(msg_info)
-            await bot.send_message(response)
+            if response is not None:
+                await bot.send_message(response)
+
+    async def turn_handler(cmd):
+        #try:
+        person_to_act = cmd.message
+        response = encounter.get_action(person_to_act)
+        #except Exception:
+        #    response = "... who should act?"
+        await bot.send_message(response)
+
+    async def invite_handler(cmd):
+        try:
+            ally_to_add = possible_allies.get(cmd.message)
+            if ally_to_add is not None:
+                encounter.add_ally(ally_to_add)
+                response = ally_to_add.full_name + " has joined the party!"
+            else:
+                response = "I don't know who that is"
+        except KeyError:
+            response = "I don't understand who you want me to invite"
+        await bot.send_message(response)
 
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),
@@ -133,10 +137,7 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
     )
     command_handler.register_command(
         command.CommandType('encounter', 'Start, end, or modify the current encounter'),
-        encounter_handler,
-        options=[
-            command.CommandOptionIdentifier('ally', 'a', 'Use with "add" to add a named ally to the encounter')
-        ]
+        encounter_handler
     )
     command_handler.register_command(
         command.CommandType('hello', 'Say hello!'),
@@ -157,6 +158,14 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
     command_handler.register_command(
         command.CommandType('say', 'Say something to everyone in the current encounter'),
         say_handler
+    )
+    command_handler.register_command(
+        command.CommandType('turn', 'Get the turn of the named person'),
+        turn_handler
+    )
+    command_handler.register_command(
+        command.CommandType('invite', 'Invite someone to join the party'),
+        invite_handler
     )
 
     async def handle_message(message):

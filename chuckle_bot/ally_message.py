@@ -24,14 +24,17 @@ class AllyMessage:
         self.secondary_subject = secondary_subject
 
     def __eq__(self, other):
-        sender_is_same = self.sender == other.sender
+        sender_is_same = self.sender.name == other.sender.name
         type_is_same = self.type_ == other.type_
-        subject_is_same = self.subject == other.subject
-        secondary_is_same = self.secondary_subject == other.secondary_subject
+        subject_is_same = self.subject.name == other.subject.name
+        secondary_is_same = self.secondary_subject.name == other.secondary_subject.name
         return sender_is_same and type_is_same and subject_is_same and secondary_is_same
 
     def __repr__(self):
-        return ' '.join([self.sender, self.type_, self.subject, self.secondary_subject])
+        elems = [self.sender.name, self.type_, self.subject.name]
+        if self.secondary_subject is not None:
+            elems.append(self.secondary_subject.name)
+        return ' '.join(elems)
 
 
 def attack(sender, who_should_attack):

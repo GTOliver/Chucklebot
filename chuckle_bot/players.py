@@ -30,6 +30,10 @@ class Player(ICharacter):
         return self._data['RACE']
 
     @property
+    def pronouns(self):
+        return self._data["PRONOUNS"]
+
+    @property
     def id(self):
         return self._data['CHAR_ID']
 

@@ -18,6 +18,13 @@ def retreat():
     return AllyAction("RETREAT")
 
 
+def wait():
+    """
+    A WAIT action means doing nothing
+    """
+    return AllyAction("WAIT")
+
+
 def support(target):
     """
     A SUPPORT action means supporting a particular party member

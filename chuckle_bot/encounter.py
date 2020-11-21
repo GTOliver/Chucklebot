@@ -12,7 +12,15 @@ class Encounter:
         return self._allies.get(char_name).get_action()
 
     def say(self, message):
-        return "\n".join([str(getattr(message, x)) for x in ["sender", "type_", "subject", "secondary_subject"]])
+        print(str(message))
+
+        if message.subject == "ALL":
+            responses = []
+            for ally in self._allies:
+                responses.append(ally.send_message(message))
+            return '\n'.join(responses)
+
+        return message.subject.send_message(message)
 
     def add_ally(self, ally):
         self._allies.add(ally)
@@ -36,6 +44,14 @@ class Encounter:
         ichars.extend(list(self._characters))
         names = [ic.name for ic in ichars]
         return names
+
+    def get_participant(self, char_name):
+        found = self._allies.get(char_name)
+        if found is not None:
+            return found
+        for pc in self._characters:
+            if pc.name.lower() == char_name.lower():
+                return pc
 
     def __repr__(self):
         lines = []
