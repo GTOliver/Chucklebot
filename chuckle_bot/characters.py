@@ -1,58 +1,40 @@
-from chuckle_bot.icharacter import ICharacter
-
-
-class Characters:
-    def __init__(self, character_list):
-        self._character_list = character_list
-
-    def get(self, char_id):
-        for character in self._character_list:
-            if char_id == character["CHAR_ID"]:
-                return Character(character)
-
-
-class Character(ICharacter):
-    def __init__(self, character_data):
-        self._data = character_data
-
+class ICharacter:
     @property
     def name(self):
-        return self._data['CHAR_NICK']
+        raise NotImplementedError
 
     @property
     def full_name(self):
-        return self._data['CHAR_FULL']
+        raise NotImplementedError
 
     @property
     def class_(self):
-        return self._data['CLASS']
+        raise NotImplementedError
 
     @property
     def race(self):
-        return self._data['RACE']
+        raise NotImplementedError
 
-    def get_modifier(self, stat_or_skill):
-        if stat_or_skill not in self._data['STATS']:
-            # It needs a proficiency modifier
-            skill = stat_or_skill
-            for stat_proficiencies in self._data['PROFICIENCY']:
-                if skill in self._data['PROFICIENCY'][stat_proficiencies]:
-                    proficiency_multiplier = self._data['PROFICIENCY'][stat_proficiencies][skill]
-                    relevant_stat = stat_proficiencies
-                    break
-        else:
-            proficiency_multiplier = 0
-            relevant_stat = stat_or_skill
 
-        stat_value = self._data['STATS'][relevant_stat]
-        stat_modifier = int((stat_value - 10)/2)
-        result = stat_modifier + self._data['PROFICIENCY_BONUS'] * proficiency_multiplier
-        return result
+class Characters:
+    def __init__(self, character_list, indexer):
+        self._character_list = character_list
+        self._indexer = indexer
 
-    def all_options(self):
-        options = []
-        for stat_dict in self._data['PROFICIENCY']:
-            options.append(stat_dict)
-            for key in self._data['PROFICIENCY'][stat_dict]:
-                options.append(key)
-        return options
+    def get(self, key):
+        for character in self._character_list:
+            if self._indexer(character) == key:
+                return character
+
+    def get_subset(self, keys):
+        return Characters([self.get(key) for key in keys], self._indexer)
+
+    def add(self, new_character):
+        self._character_list.append(new_character)
+
+    def __iter__(self):
+        return self._character_list.__iter__()
+
+    def __len__(self):
+        return self._character_list.__len__()
+

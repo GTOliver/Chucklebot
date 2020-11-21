@@ -2,7 +2,7 @@ from chuckle_bot import ally
 from chuckle_bot import chuckle_bot
 from chuckle_bot import chuckle_count
 from chuckle_bot import members
-from chuckle_bot import characters
+from chuckle_bot import players
 
 import json
 
@@ -22,13 +22,13 @@ def main():
         guild_members = members.Members(json.load(fp))
 
     with open(CHARACTER_PATH) as fp:
-        dnd_characters = characters.Characters(json.load(fp))
+        dnd_characters = players.build_players(json.load(fp))
 
     with open(CHUCKLECOUNT_PATH) as fp:
         chuckles = chuckle_count.ChuckleCount(json.load(fp))
 
     with open(DEFAULT_ENCOUNTER_PATH) as fp:
-        default_encounter_chars = [dnd_characters.get(x) for x in json.load(fp)["CHARACTERS"]]
+        default_encounter_chars = dnd_characters.get_subset(json.load(fp)["CHARACTERS"])
 
     with open(ALLIES_PATH) as fp:
         possible_allies = ally.build_allies(json.load(fp))

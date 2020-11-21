@@ -1,20 +1,21 @@
-from chuckle_bot.ally import Allies
+from chuckle_bot.ally import ALLIES_INDEXER
+from chuckle_bot.characters import Characters
 
 
 class Encounter:
     def __init__(self, player_characters):
         self._characters = player_characters
-        self._allies = Allies({})
+        self._allies = Characters([], ALLIES_INDEXER)
         self._active = False
 
     def get_action(self, char_name):
-        return self._allies.get(char_name).take_turn()
+        return self._allies.get(char_name).get_action()
 
-    def say(self, sender, message):
-        pass
+    def say(self, message):
+        return "\n".join([str(getattr(message, x)) for x in ["sender", "type_", "subject", "secondary_subject"]])
 
     def add_ally(self, ally):
-        self._allies.add(ally.name, ally)
+        self._allies.add(ally)
 
     def begin(self):
         self._active = True
@@ -28,6 +29,13 @@ class Encounter:
         self._allies = []
         self._active = False
         return "Ready to start a new encounter..."
+
+    @property
+    def participants(self):
+        ichars = list(self._allies)
+        ichars.extend(list(self._characters))
+        names = [ic.name for ic in ichars]
+        return names
 
     def __repr__(self):
         lines = []

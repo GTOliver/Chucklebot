@@ -1,3 +1,6 @@
+from chuckle_bot import ally_actions
+
+
 class AllyBehaviour:
     def __init__(self, ally):
         # AllyBehaviour knows about the ICharacter interface
@@ -6,5 +9,5 @@ class AllyBehaviour:
     def send_message(self, msg):
         pass
 
-    def take_turn(self):
-        return "My name is " + self._ally.name
+    def get_action(self):
+        return ally_actions.attack()

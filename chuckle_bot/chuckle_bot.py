@@ -1,4 +1,5 @@
 from chuckle_bot.encounter import Encounter
+from chuckle_bot.interpreter import Interpreter as SayInterpreter
 from chuckle_bot.parser import parse_message
 from chuckle_bot.parser import ParseError
 from chuckle_bot.simple_logging import Logger
@@ -31,7 +32,8 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
 
     bot = Bot(guild_name, channel_id, logger, intents=bot_intents)
 
-    current_encounter = Encounter(default_encounter_chars)
+    encounter = Encounter(default_encounter_chars)
+    say_interpreter = SayInterpreter(encounter)
     command_handler = command.CommandHandler()
 
     async def help_handler(cmd):
@@ -77,29 +79,29 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
     async def encounter_handler(cmd):
         instruction = cmd.message.split(' ', 1)[0].lower()
         if instruction == "display":
-            response = str(current_encounter)
+            response = str(encounter)
         elif instruction == "begin":
-            response = current_encounter.begin()
+            response = encounter.begin()
         elif instruction == "end":
-            response = current_encounter.end()
+            response = encounter.end()
         elif instruction == "reset":
-            response = current_encounter.reset()
+            response = encounter.reset()
         elif instruction == "add":
             try:
                 ally_to_add = possible_allies.get(cmd.options["ally"])
                 if ally_to_add is not None:
-                    current_encounter.add_ally(ally_to_add)
+                    encounter.add_ally(ally_to_add)
                     response = ally_to_add.full_name + " has been added to the encounter"
                 else:
                     response = "I don't know who that is"
             except KeyError:
                 response = "I don't understand what you want me to add"
         elif instruction == "act":
-            try:
-                person_to_act = cmd.message.split(' ', 1)[1].lower()
-                response = current_encounter.get_action(person_to_act)
-            except Exception:
-                response = "... who should act?"
+            #try:
+            person_to_act = cmd.message.split(' ', 1)[1].lower()
+            response = encounter.get_action(person_to_act)
+            #except Exception:
+            #    response = "... who should act?"
             pass
         else:
             response = "Err... what?"
@@ -107,7 +109,12 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
 
     async def say_handler(cmd):
         # Say something. All allies in the encounter hear the message.
-        pass
+        char_id = players.get(cmd.sender)["CHAR_ID"]
+        sayer_name = characters.get(char_id).name
+        msg_info = say_interpreter.interpret(sayer_name, cmd.message)
+        if msg_info is not None:
+            response = encounter.say(msg_info)
+            await bot.send_message(response)
 
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),
