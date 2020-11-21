@@ -119,16 +119,16 @@ SIMPLIFY_THESAURUS = {
         'flee', 'run', 'safety', 'careful', 'away',
     ],
     'wait': [
-        'hold', 'pause',
+        'hold', 'pause', 'nothing',
     ],
     'support': [
         'help', 'assist', 'heal',
     ],
     'praise': [
-        'good', 'great', 'nice', 'awesome', 'sick',
+        'good', 'great', 'nice', 'awesome', 'sick', 'thanks', 'thank',
     ],
     'rebuke': [
-        'bad', 'damn', 'damnit', 'poor',
+        'bad', 'damn', 'damnit', 'poor', 'idiot', 'stupid', 'dumb',
     ],
     'inverse': [
         'dont', 'not',

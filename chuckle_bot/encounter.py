@@ -12,8 +12,6 @@ class Encounter:
         return self._allies.get(char_name).get_action()
 
     def say(self, message):
-        print(str(message))
-
         if message.subject == "ALL":
             responses = []
             for ally in self._allies:
