@@ -106,16 +106,17 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
         await bot.send_message(response)
 
     async def invite_handler(cmd):
-        try:
-            ally_to_add = possible_allies[cmd.message]
+        ally_names = cmd.message.split(' ')
+        responses = []
+        for ally_name in ally_names:
+            ally_to_add = possible_allies[ally_name]
             if ally_to_add is not None:
                 encounter.add_ally(ally_to_add)
                 response = ally_to_add.full_name + " has joined the party!"
             else:
-                response = "I don't know who that is"
-        except KeyError:
-            response = "I don't understand who you want me to invite"
-        await bot.send_message(response)
+                response = "I don't know who " + ally_name + " is"
+            responses.append(response)
+        await bot.send_message('\n'.join(responses))
 
     command_handler.register_command(
         command.CommandType('begone', 'Disconnect the bot'),

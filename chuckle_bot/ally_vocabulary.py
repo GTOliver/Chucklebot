@@ -9,6 +9,12 @@ class AllyVocabulary:
     def __init__(self, ally):
         self._ally = ally
 
+    def begin_encounter(self):
+        return self._ally.name + " is present at the beginning of the encounter."
+
+    def end_encounter(self):
+        return self._ally.name + " is present at the end of the encounter."
+
     def send_message(self, msg):
         return self._ally.name + " received the message."
 
@@ -24,6 +30,12 @@ class AllyVocabulary:
 
 
 class RandomisedVocabulary(AllyVocabulary):
+    def begin_encounter(self):
+        return self._ally.name + " says \"" + random_entry(self._BEGIN) + "\""
+
+    def end_encounter(self):
+        return self._ally.name + " says \"" + random_entry(self._END) + "\""
+
     def send_message(self, msg):
         if msg.type_ in ["REBUKE", "PRAISE"]:
             response = self._ally.name + " says: \""
@@ -53,6 +65,8 @@ class RandomisedVocabulary(AllyVocabulary):
             msg = msg.replace('_tpo', action.target.pronouns["OBJECTIVE"])
         return msg
 
+    _BEGIN = [""]
+    _END = [""]
     _REBUKE = [""]
     _PRAISE = [""]
     _ATTACK_PRE = [""]
@@ -153,6 +167,13 @@ class AcademicVocabulary(RandomisedVocabulary):
         "I am rather remarkable.",
         "My intelligence is unmatched.",
         "My last move was a 500 IQ play.",
+    ]
+    _BEGIN = [
+        "Oh no...",
+    ]
+    _END = [
+        "I'm glad that's over!",
+        "Phew!",
     ]
 
 

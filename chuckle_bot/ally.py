@@ -58,6 +58,12 @@ class Ally(ICharacter):
         chosen_action = self._behaviour.get_action()
         return self._vocabulary.announce_action(chosen_action)
 
+    def begin_encounter(self):
+        return self._vocabulary.begin_encounter()
+
+    def end_encounter(self):
+        return self._vocabulary.end_encounter()
+
     def reset(self):
         self._behaviour.reset()
         self._vocabulary.reset()

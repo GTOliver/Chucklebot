@@ -86,6 +86,8 @@ class Interpreter:
                 args.append(sender)
             elif targ.startswith('_'):
                 args.append(alii[int(targ[1:])])
+            elif targ == "ALL":
+                args.append(targ)
 
         actual_args = []
         for arg in args:

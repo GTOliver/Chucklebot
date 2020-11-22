@@ -31,7 +31,11 @@ class AllyMessage:
         return sender_is_same and type_is_same and subject_is_same and secondary_is_same
 
     def __repr__(self):
-        elems = [self.sender.name, self.type_, self.subject.name]
+        elems = [self.sender.name, self.type_]
+        if self.subject == "ALL":
+            elems.append("ALL")
+        else:
+            elem.append(self.subject.name)
         if self.secondary_subject is not None:
             elems.append(self.secondary_subject.name)
         return ' '.join(elems)

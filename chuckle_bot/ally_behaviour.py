@@ -75,7 +75,7 @@ class BiasedActionBehaviour(AllyBehaviour):
         if msg.type_ not in ["REBUKE", "PRAISE"]:
             self._suggestions[msg.type_] += 1
         if msg.type_ == "SUPPORT":
-            self._support_target = msg.target
+            self._support_target = msg.subject
 
     def get_action(self):
         if self._suggestions[self._bias] > 0:

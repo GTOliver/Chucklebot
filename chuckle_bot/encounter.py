@@ -15,9 +15,9 @@ class Encounter:
         if message.subject == "ALL":
             responses = []
             for ally in self._allies:
-                responses.append(ally.send_message(message))
+                if (response := ally.send_message(message)) is not None:
+                    responses.append(response)
             return '\n'.join(responses)
-
         return message.subject.send_message(message)
 
     def add_ally(self, ally):
@@ -26,12 +26,16 @@ class Encounter:
     def begin(self):
         self._reset_allies()
         self._active = True
-        return "The encounter begins!"
+        ally_responses = [a.begin_encounter() for a in self._allies]
+        title = "The encounter begins!"
+        return title + "\n" + "\n".join(ally_responses)
 
     def end(self):
         self._reset_allies()
         self._active = False
-        return "The encounter ends!"
+        ally_responses = [a.end_encounter() for a in self._allies]
+        title = "The encounter ends!"
+        return title + "\n" + "\n".join(ally_responses)
 
     def reset(self):
         self._remove_allies()
@@ -82,4 +86,4 @@ class Encounter:
 
     def _remove_allies(self):
         self._reset_allies()
-        self._allies = []
+        self._allies = Characters([], ALLIES_INDEXER)
