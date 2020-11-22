@@ -75,8 +75,7 @@ class Interpreter:
                                                 Interpreter._placeholder_string)
         simple_words = self._simplify(words)
 
-        matched_pattern = self._matched_pattern(
-            sender.lower(), self._SENDER_PLACEHOLDER, alii, simple_words)
+        matched_pattern = self._matched_pattern(simple_words)
 
         if matched_pattern is None:
             return
@@ -97,7 +96,7 @@ class Interpreter:
         return func(*actual_args)
 
     @staticmethod
-    def _matched_pattern(sender, sender_placeholder, alii, simple_words):
+    def _matched_pattern(simple_words):
         """
         pattern = []
         for word in simple_words:

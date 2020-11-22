@@ -28,7 +28,7 @@ def main():
         chuckles = chuckle_count.ChuckleCount(json.load(fp))
 
     with open(DEFAULT_ENCOUNTER_PATH) as fp:
-        default_encounter_chars = dnd_characters.get_subset(json.load(fp)["CHARACTERS"])
+        default_encounter_chars = dnd_characters.subset(json.load(fp)["CHARACTERS"])
 
     with open(ALLIES_PATH) as fp:
         possible_allies = ally.build_allies(json.load(fp))

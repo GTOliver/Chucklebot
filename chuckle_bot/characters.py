@@ -25,16 +25,16 @@ class Characters:
         self._character_list = character_list
         self._indexer = indexer
 
-    def get(self, key):
-        for character in self._character_list:
-            if self._indexer(character) == key:
-                return character
-
-    def get_subset(self, keys):
-        return Characters([self.get(key) for key in keys], self._indexer)
+    def subset(self, keys):
+        return Characters([self[key] for key in keys], self._indexer)
 
     def add(self, new_character):
         self._character_list.append(new_character)
+
+    def __getitem__(self, item):
+        for character in self._character_list:
+            if self._indexer(character) == item:
+                return character
 
     def __iter__(self):
         return self._character_list.__iter__()

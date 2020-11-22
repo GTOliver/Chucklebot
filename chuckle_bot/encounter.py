@@ -9,7 +9,7 @@ class Encounter:
         self._active = False
 
     def get_action(self, char_name):
-        return self._allies.get(char_name).get_action()
+        return self._allies[char_name].get_action()
 
     def say(self, message):
         if message.subject == "ALL":
@@ -24,15 +24,17 @@ class Encounter:
         self._allies.add(ally)
 
     def begin(self):
+        self._reset_allies()
         self._active = True
         return "The encounter begins!"
 
     def end(self):
+        self._reset_allies()
         self._active = False
         return "The encounter ends!"
 
     def reset(self):
-        self._allies = []
+        self._remove_allies()
         self._active = False
         return "Ready to start a new encounter..."
 
@@ -44,7 +46,7 @@ class Encounter:
         return names
 
     def get_participant(self, char_name):
-        found = self._allies.get(char_name)
+        found = self._allies[char_name]
         if found is not None:
             return found
         for pc in self._characters:
@@ -73,3 +75,11 @@ class Encounter:
                 lines.append("Allies ready:")
             lines.extend([indent + x.full_name for x in self._allies])
         return '\n'.join(lines)
+
+    def _reset_allies(self):
+        for ally in self._allies:
+            ally.reset()
+
+    def _remove_allies(self):
+        self._reset_allies()
+        self._allies = []

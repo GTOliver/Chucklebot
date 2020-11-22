@@ -10,7 +10,7 @@ def build_allies(raw_allies):
     allies = Characters([], ALLIES_INDEXER)
     for raw_ally in raw_allies:
         ally = Ally(raw_ally)
-        behaviour = ALLY_BEHAVIOUR[raw_ally['BEHAVIOUR'].lower()](ally)
+        behaviour = ALLY_BEHAVIOUR[raw_ally['BEHAVIOUR'].lower()]()
         ally.set_behaviour(behaviour)
         vocabulary = ALLY_VOCABULARY[raw_ally['VOCABULARY'].lower()](ally)
         ally.set_vocabulary(vocabulary)
@@ -57,3 +57,7 @@ class Ally(ICharacter):
     def get_action(self):
         chosen_action = self._behaviour.get_action()
         return self._vocabulary.announce_action(chosen_action)
+
+    def reset(self):
+        self._behaviour.reset()
+        self._vocabulary.reset()

@@ -50,14 +50,14 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
         return
 
     async def hello_handler(cmd):
-        char_id = players.get_char_id(cmd.sender)
-        char_name = characters.get(char_id).name
+        char_id = players.char_id(cmd.sender)
+        char_name = characters[char_id].name
         await bot.send_message("Hello " + char_name)
 
     async def roll_handler(cmd):
         adv = "advantage" in cmd.flags
         disadv = "disadvantage" in cmd.flags
-        stats = characters.get(players.get_char_id(cmd.sender))
+        stats = characters[players.char_id(cmd.sender)]
         await bot.send_message(roll.get_response(cmd.message, stats, adv, disadv))
 
     async def chuckles_handler(cmd):
@@ -65,13 +65,13 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
             all_chuckles = chuckles.get_all()
             data_strs = []
             for char_id, count in all_chuckles:
-                char_name = characters.get(char_id).full_name
+                char_name = characters[char_id].full_name
                 data_str = char_name + ": " + str(count)
                 data_strs.append(data_str)
             msg = "\n".join(data_strs)
         else:
-            char_id = players.get(cmd.sender)["CHAR_ID"]
-            player_name = characters.get(char_id).full_name
+            char_id = players.char_id(cmd.sender)
+            player_name = characters[char_id].full_name
             chuckles_caused = chuckles.get_count(char_id)
             msg = player_name + " has caused " + str(chuckles_caused) + " Chultian chuckles!"
         await bot.send_message(msg)
@@ -92,8 +92,8 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
 
     async def say_handler(cmd):
         # Say something. All allies in the encounter hear the message.
-        char_id = players.get(cmd.sender)["CHAR_ID"]
-        sayer_name = characters.get(char_id).name
+        char_id = players.char_id(cmd.sender)
+        sayer_name = characters[char_id].name
         msg_info = say_interpreter.interpret(sayer_name, cmd.message)
         if msg_info is not None:
             response = encounter.say(msg_info)
@@ -101,16 +101,13 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
                 await bot.send_message(response)
 
     async def turn_handler(cmd):
-        #try:
         person_to_act = cmd.message
         response = encounter.get_action(person_to_act)
-        #except Exception:
-        #    response = "... who should act?"
         await bot.send_message(response)
 
     async def invite_handler(cmd):
         try:
-            ally_to_add = possible_allies.get(cmd.message)
+            ally_to_add = possible_allies[cmd.message]
             if ally_to_add is not None:
                 encounter.add_ally(ally_to_add)
                 response = ally_to_add.full_name + " has joined the party!"

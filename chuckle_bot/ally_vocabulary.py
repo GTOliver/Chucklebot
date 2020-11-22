@@ -7,11 +7,10 @@ def random_entry(input_list):
 
 class AllyVocabulary:
     def __init__(self, ally):
-        # Uses the ICharacter interface
         self._ally = ally
 
     def send_message(self, msg):
-        return "Understood."
+        return self._ally.name + " received the message."
 
     def announce_action(self, action):
         """ Get a text version of the action """
@@ -19,6 +18,9 @@ class AllyVocabulary:
         if action.target is not None:
             response += " " + action.target.name
         return response
+
+    def reset(self):
+        pass
 
 
 class RandomisedVocabulary(AllyVocabulary):
@@ -155,6 +157,6 @@ class AcademicVocabulary(RandomisedVocabulary):
 
 
 ALLY_VOCABULARY = {
-    "default": AllyVocabulary,
+    "terse": AllyVocabulary,
     "academic": AcademicVocabulary,
 }
