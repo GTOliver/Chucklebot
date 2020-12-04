@@ -115,7 +115,7 @@ ALLY_BEHAVIOUR = {
     "idle": AllyBehaviour,
     "compliant": CompliantBehaviour,
     "cautious": CautiousBehaviour,
-    "aggressive": AggressiveBehaviour,
+    "terse": AggressiveBehaviour,
     "docile": DocileBehaviour
 }
 

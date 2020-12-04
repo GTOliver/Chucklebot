@@ -5,6 +5,7 @@ from chuckle_bot import members
 from chuckle_bot import players
 
 import json
+import random
 
 CONFIG_PATH = 'data/config.json'
 CHARACTER_PATH = 'data/characters.json'
@@ -15,6 +16,8 @@ ALLIES_PATH = 'data/allies.json'
 
 
 def main():
+    random.seed()
+
     with open(CONFIG_PATH) as fp:
         config = json.load(fp)
 

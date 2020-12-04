@@ -120,7 +120,98 @@ class AcademicVocabulary(RandomisedVocabulary):
     ]
 
 
+class ConfidentVocabulary(RandomisedVocabulary):
+    """ A confident vocabulary is ... confident and adept """
+    _ATTACK = [
+        "_x says \"Hah! Time for an attack!!\"",
+        "_x says \"I will attack!!\"",
+        "_x says \"Aaaattttacckkk!!\"",
+        "_x attacks!!.",
+    ]
+    _WAIT = [
+        "_x ponders...",
+        "_x waits attentively...",
+        "_x pauses for a moment...",
+        "_x waits a moment...",
+    ]
+    _RETREAT = [
+        "_x moves to safer ground.",
+        "_x retreats from danger and steadies themselves.",
+        "_x moves to a safer area...",
+    ]
+    _SUPPORT = [
+        "_x says \"I'm coming, _tn\"!",
+        "_x rushes to _tn's aid.",
+        "_x runs to help _tn.",
+    ]
+    _REBUKE = [
+        "_x says \"Hey...\"",
+        "_x says \"Pah!\"",
+        "_x says \"Nonsense, _tn.\"",
+        "_x says \"That's not true!\"",
+        "_x rolls _ps eyes.",
+    ]
+    _PRAISE = [
+        "_x says \"Hah hah, quite right!.\"",
+        "_x says \"Indeed, _tn.\"",
+        "_x says \"Yes!\"",
+        "_x says \"Oh ho ho!.\"",
+    ]
+    _BEGIN = [
+        "_x says \"Aha! A fight...!\"",
+    ]
+    _END = [
+        "_x says \"Well well...\"",
+        "_x says \"Good job crew!\"",
+        "_x says \"We sure showed them!\"",
+    ]
+
+
+class NonverbalVocabulary(RandomisedVocabulary):
+    """ A nonverbal vocabulary ... can't speak """
+    _ATTACK = [
+        "_x makes a guttural noise and attacks!",
+        "_x attacks with a grunt",
+        "_x attacks!",
+        "_x grunts and attacks!",
+    ]
+    _WAIT = [
+        "_x looks around...",
+        "_x waits attentively...",
+        "_x grunts.",
+    ]
+    _RETREAT = [
+        "_x rushes away to safer ground.",
+        "_x retreats from danger...",
+        "_x moves to a safer place.",
+        "_x grunts and retreats.",
+    ]
+    _SUPPORT = [
+        "_x rushes to _tn's aid.",
+        "_x runs to help _tn.",
+        "_x grunts... (and helps _tn)",
+    ]
+    _REBUKE = [
+        "_x grunts angrily",
+        "_x makes some angry noises in the direction of _tn",
+        "_x grunts.",
+    ]
+    _PRAISE = [
+        "_x grunts appreciatively",
+        "_x nods",
+        "_x grunts.",
+    ]
+    _BEGIN = [
+        "_x grunts.",
+    ]
+    _END = [
+        "_x grunts.",
+    ]
+
+
 ALLY_VOCABULARY = {
     "terse": AllyVocabulary,
     "academic": AcademicVocabulary,
+    "confident": ConfidentVocabulary,
+    "nonverbal": NonverbalVocabulary,
 }

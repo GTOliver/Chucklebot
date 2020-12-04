@@ -178,6 +178,6 @@ def make_chuckle_bot(guild_name, channel_id, players, characters, chuckles,
         except command.CommandException as exc:
             await bot.send_message(exc.msg)
 
-    #bot.set_ready_message("Chuckle!")
+    bot.set_ready_message("Chuckle!")
     bot.set_message_handler(handle_message)
     return bot
